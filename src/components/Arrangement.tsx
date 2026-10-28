@@ -197,10 +197,14 @@ export const Arrangement: React.FC<ArrangementProps> = ({
                 cy={sy(p.y)}
                 r={dotR}
                 fill={dotColor}
-                opacity={interpolate(i, [0, Math.max(1, pts.length)], [0, 1], {
-                  extrapolateLeft: "clamp",
-                  extrapolateRight: "clamp",
-                }) * (reveal > 0 ? progress : 1)}
+                opacity={
+                  reveal > 0
+                    ? interpolate(frame, [i * 1.1, i * 1.1 + 12], [0, 1], {
+                        extrapolateLeft: "clamp",
+                        extrapolateRight: "clamp",
+                      })
+                    : 1
+                }
               />
             ))
           : null}
