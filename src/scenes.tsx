@@ -443,7 +443,7 @@ export const NothingElseScene: React.FC<SceneProps> = () => (
 export const SmallCaseScene: React.FC<SceneProps> = () => (
   <Stage
     boardWidth={720}
-    board={<Arrangement lines={FOUR} size={720} span={0.95} dots="all" dotR={8} diagonals reveal={26} />}
+    board={<Arrangement lines={FOUR} size={720} span={1.22} dots="all" dotR={9} diagonals reveal={26} />}
   >
     <Eyebrow>Sanity check</Eyebrow>
     <Heading size={52}>Try four lines</Heading>
@@ -485,42 +485,60 @@ export const RecapScene: React.FC<SceneProps> = () => (
     }}
   >
     <Eyebrow>The whole method</Eyebrow>
-    <div style={{ display: "flex", alignItems: "flex-end", gap: 28, marginTop: 10 }}>
+    <Rise delay={6}>
+      <div style={{ display: "flex", alignItems: "center", gap: 18, marginTop: 4 }}>
+        {["10 lines", "45 crossings", "990 pairs"].map((t, i) => (
+          <React.Fragment key={t}>
+            <span style={{ fontSize: 28, fontWeight: 700, color: theme.muted }}>{t}</span>
+            {i < 2 ? <span style={{ fontSize: 26, color: theme.faint }}>→</span> : null}
+          </React.Fragment>
+        ))}
+      </div>
+    </Rise>
+    <div style={{ display: "flex", alignItems: "flex-end", gap: 30, marginTop: 34 }}>
       {[
-        { big: "45", cap: "points" },
-        { big: "990", cap: "pairs" },
-        { big: "350", cap: "overcount" },
+        { big: "990", cap: "PAIRS", accent: false },
+        { big: "350", cap: "OVERCOUNT", accent: false },
+        { big: "640", cap: "OPTION D", accent: true },
       ].map((it, i) => (
         <React.Fragment key={it.cap}>
-          <Rise delay={8 + i * 12}>
+          <Rise delay={18 + i * 12}>
             <div style={{ textAlign: "center" }}>
-              <div style={{ fontFamily: lora, fontSize: 66, fontWeight: 600, color: theme.ink, lineHeight: 1 }}>
+              <div
+                style={{
+                  fontFamily: lora,
+                  fontSize: it.accent ? 96 : 64,
+                  fontWeight: 700,
+                  color: it.accent ? theme.accentDark : theme.ink,
+                  lineHeight: 1,
+                }}
+              >
                 {it.big}
               </div>
               <div
-                style={{ fontSize: 16, fontWeight: 700, letterSpacing: "0.12em", color: theme.faint, marginTop: 12 }}
+                style={{
+                  fontSize: 16,
+                  fontWeight: 700,
+                  letterSpacing: "0.12em",
+                  color: it.accent ? theme.accent : theme.faint,
+                  marginTop: 12,
+                }}
               >
-                {it.cap.toUpperCase()}
+                {it.cap}
               </div>
             </div>
           </Rise>
-          <Rise delay={8 + i * 12}>
-            <div style={{ fontSize: 46, color: theme.faint, paddingBottom: 26 }}>{i === 2 ? "=" : "−"}</div>
-          </Rise>
+          {i < 2 ? (
+            <Rise delay={18 + i * 12}>
+              <div style={{ fontSize: 46, color: theme.faint, paddingBottom: 28 }}>
+                {i === 0 ? "−" : "="}
+              </div>
+            </Rise>
+          ) : null}
         </React.Fragment>
       ))}
-      <Rise delay={44}>
-        <div style={{ textAlign: "center" }}>
-          <div style={{ fontFamily: lora, fontSize: 100, fontWeight: 700, color: theme.accentDark, lineHeight: 0.9 }}>
-            640
-          </div>
-          <div style={{ fontSize: 16, fontWeight: 700, letterSpacing: "0.12em", color: theme.accent, marginTop: 12 }}>
-            OPTION D
-          </div>
-        </div>
-      </Rise>
     </div>
-    <Body delay={62} size={30} muted style={{ textAlign: "center", marginTop: 44 }}>
+    <Body delay={62} size={30} muted style={{ textAlign: "center", marginTop: 40 }}>
       Join the crossings, but never forget the lines you started with.
     </Body>
   </AbsoluteFill>

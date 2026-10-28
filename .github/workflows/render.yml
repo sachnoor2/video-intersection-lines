@@ -65,6 +65,18 @@ jobs:
             out/intersection-lines.mp4 \
             --gl=swangle --concurrency=3 --log=info
 
+      - name: Normalise the audio level
+        run: |
+          set -euo pipefail
+          ffmpeg -y -hide_banner -loglevel error \
+            -i out/intersection-lines.mp4 \
+            -c:v copy \
+            -af "loudnorm=I=-16:TP=-1.5:LRA=11" \
+            -c:a aac -b:a 192k -ar 48000 \
+            -movflags +faststart \
+            out/normalised.mp4
+          mv out/normalised.mp4 out/intersection-lines.mp4
+
       - name: Stitch the narration into one track and verify the MP4
         run: |
           set -euo pipefail
