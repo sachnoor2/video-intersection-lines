@@ -1,0 +1,89 @@
+name: Render explainer video
+
+on:
+  workflow_dispatch:
+  push:
+    branches: [main]
+    paths-ignore:
+      - "**.md"
+
+permissions:
+  contents: read
+
+jobs:
+  render:
+    name: TTS + Remotion render
+    runs-on: ubuntu-latest
+    timeout-minutes: 60
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+
+      - name: Install JS dependencies
+        run: npm install --no-audit --no-fund
+
+      - name: Make sure ffmpeg is available
+        run: |
+          if ! command -v ffmpeg >/dev/null 2>&1; then
+            sudo apt-get update && sudo apt-get install -y ffmpeg
+          fi
+          ffmpeg -version | head -1
+
+      - name: Python deps for Kokoro TTS
+        run: |
+          set -euo pipefail
+          sudo apt-get update
+          sudo apt-get install -y espeak-ng
+          python3 -m pip install --upgrade pip
+          python3 -m pip install kokoro-onnx numpy
+
+      - name: Download Kokoro-82M and the voice pack
+        run: |
+          set -euo pipefail
+          curl -fL --retry 3 -o kokoro-v1.0.onnx \
+            https://github.com/thewh1teagle/kokoro-onnx/releases/download/model-files-v1.0/kokoro-v1.0.onnx
+          curl -fL --retry 3 -o voices-v1.0.bin \
+            https://github.com/thewh1teagle/kokoro-onnx/releases/download/model-files-v1.0/voices-v1.0.bin
+          ls -lh kokoro-v1.0.onnx voices-v1.0.bin
+
+      - name: Generate narration and timing manifest
+        run: |
+          python3 scripts/tts_kokoro.py \
+            --model kokoro-v1.0.onnx \
+            --voices voices-v1.0.bin
+
+      - name: Type-check
+        run: npx tsc --noEmit
+
+      - name: Render video with Remotion
+        run: |
+          npx remotion render src/index.ts Intersection \
+            out/intersection-lines.mp4 \
+            --gl=swangle --concurrency=3 --log=info
+
+      - name: Stitch the narration into one track and verify the MP4
+        run: |
+          set -euo pipefail
+          ffmpeg -y -hide_banner -loglevel error \
+            -f concat -safe 0 -i public/audio/list.txt -c copy out/narration.wav
+          echo "=== container ==="
+          ffprobe -v error -show_entries format=duration,size -of default=nw=1 out/intersection-lines.mp4
+          echo "=== streams ==="
+          ffprobe -v error -show_entries stream=codec_type,codec_name,width,height,r_frame_rate \
+            -of default=nw=1 out/intersection-lines.mp4
+          echo "=== audio level ==="
+          ffmpeg -hide_banner -i out/intersection-lines.mp4 -t 20 -af volumedetect -f null - 2>&1 | grep -i volume || true
+
+      - name: Upload the finished video
+        uses: actions/upload-artifact@v4
+        with:
+          name: video
+          path: |
+            out/intersection-lines.mp4
+            out/narration.wav
+          if-no-files-found: error
+          retention-days: 14
