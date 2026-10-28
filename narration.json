@@ -1,0 +1,55 @@
+{
+  "fps": 30,
+  "engine": "kokoro",
+  "voice": "am_michael",
+  "lang": "en-us",
+  "speed": 1.0,
+  "pad": 0.75,
+  "minSeconds": 4.0,
+  "scenes": [
+    {
+      "id": "01-title",
+      "text": "Ten straight lines on a plane. No two of them are parallel. No three of them pass through one point. Now mark every crossing, and join every pair of crossings. How many lines appear? The answer is six hundred and forty. And one small correction gets us there."
+    },
+    {
+      "id": "02-setup",
+      "text": "Look at what the two conditions buy us. No two parallel means every single pair of lines really does meet. No three concurrent means no two meetings ever land on the same spot. So there are exactly as many crossing points as there are pairs of lines."
+    },
+    {
+      "id": "03-points",
+      "text": "Ten lines, chosen two at a time. Each pair gives one point, and no point is counted twice. Ten choose two is forty five. So the plane holds forty five crossing points."
+    },
+    {
+      "id": "04-naive",
+      "text": "Now join them up. Any two points fix a line, so we take forty five choose two. That is nine hundred and ninety pairs. It looks like the answer. It is not. Some of those pairs draw the very same line."
+    },
+    {
+      "id": "05-collinear",
+      "text": "Here is the reason. Look at one original line. Every one of its nine crossings already sits on it. Choose any two of those nine points, and the line through them is the original line itself. Nine choose two is thirty six pairs, all drawing one single line."
+    },
+    {
+      "id": "06-correction",
+      "text": "So on each original line we counted thirty six lines, where we should have counted one. That is thirty five too many. And it happens on every single original line."
+    },
+    {
+      "id": "07-ten",
+      "text": "Ten original lines, thirty five each. Ten times thirty five is three hundred and fifty. That is the whole overcount, and we subtract it once."
+    },
+    {
+      "id": "08-total",
+      "text": "Nine hundred and ninety, minus three hundred and fifty, leaves six hundred and forty. So the answer is option D."
+    },
+    {
+      "id": "09-nothing-else",
+      "text": "One loose end. Could three crossings sit on some other line? No. Each crossing belongs to exactly two lines. So any line holding three of them would have to be one of the originals. There is nothing else to subtract."
+    },
+    {
+      "id": "10-small",
+      "text": "Check it on four lines. Six crossings, so fifteen pairs. Each original line holds three of them, so we overcounted by four times two, that is eight. Fifteen minus eight is seven. Four original lines, and three diagonals. That is the complete quadrilateral, and it matches."
+    },
+    {
+      "id": "11-recap",
+      "text": "Forty five points. Nine hundred and ninety pairs. Minus three hundred and fifty. Six hundred and forty. Join the points, but never forget the lines you started with."
+    }
+  ]
+}
